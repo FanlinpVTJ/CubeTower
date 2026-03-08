@@ -20,6 +20,15 @@ namespace CubeGame.Screen
             Container.Bind<ILeftZone>().FromInstance(leftZone).AsSingle();
             Container.Bind<IRightZone>().FromInstance(rightZone).AsSingle();
             Container.Bind<IScrollZone>().FromInstance(scrollZone).AsSingle();
+
+            if (scrollZone is IScrollView scrollView)
+            {
+                Container.Bind<IScrollView>().FromInstance(scrollView).AsSingle();
+            }
+            else
+            {
+                throw new ZenjectException("[ScreenZonesInstaller] Scroll zone prefab must implement IScrollView.");
+            }
         }
 
         private TZone SpawnAndResolve<TZone>(MonoBehaviour prefab, string fieldName) where TZone : class

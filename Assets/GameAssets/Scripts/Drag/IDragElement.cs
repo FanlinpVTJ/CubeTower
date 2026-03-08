@@ -1,12 +1,12 @@
+using CubeGame.Scroll;
 using UnityEngine;
 
-namespace CubeGame.Scroll
+namespace CubeGame.Drag
 {
-    public interface IScrollElement
+    public interface IDragElement
     {
         RectTransform Root { get; }
         ScrollElementData Data { get; }
-        string ElementId { get; }
         void Initialize(ScrollElementData data);
         void OnDragStart(Vector2 pointerScreenPosition);
         void OnDrag(Vector2 pointerScreenPosition);

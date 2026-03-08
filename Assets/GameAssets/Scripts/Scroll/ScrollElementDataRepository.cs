@@ -16,7 +16,12 @@ namespace CubeGame.Scroll
 
         public IReadOnlyList<ScrollElementData> GetInitialElements()
         {
-            return feedConfig != null ? feedConfig.InitialElements : Empty;
+            if (feedConfig == null)
+            {
+                return Empty;
+            }
+
+            return feedConfig.InitialElements;
         }
     }
 }

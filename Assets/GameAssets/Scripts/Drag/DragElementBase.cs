@@ -1,19 +1,18 @@
 using System;
 using CubeGame.Input;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using CubeGame.Scroll;
 using MessagePipe;
+using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
-namespace CubeGame.Scroll
+namespace CubeGame.Drag
 {
     [RequireComponent(typeof(RectTransform))]
-    public abstract class ScrollElementBase : MonoBehaviour, IScrollElement, IPointerDownHandler
+    public abstract class DragElementBase : MonoBehaviour, IDragElement
     {
         [SerializeField] private RectTransform root;
         [SerializeField] private Image viewTarget;
-        [Inject(Optional = true)] private IPublisher<ScrollElementPressedMessage> pressedPublisher;
         [Inject(Optional = true)] private ISubscriber<DragSessionStartedMessage> dragStartedSubscriber;
         [Inject(Optional = true)] private ISubscriber<DragSessionMovedMessage> dragMovedSubscriber;
         [Inject(Optional = true)] private ISubscriber<DragSessionEndedMessage> dragEndedSubscriber;
@@ -24,29 +23,15 @@ namespace CubeGame.Scroll
 
         public RectTransform Root => root != null ? root : (RectTransform)transform;
         public ScrollElementData Data { get; private set; }
-        public string ElementId => Data != null ? Data.ElementId : string.Empty;
 
         public virtual void Initialize(ScrollElementData data)
         {
             Data = data;
-
-            if (data == null)
-            {
-                gameObject.name = "ScrollElement_Empty";
-
-                if (viewTarget != null)
-                {
-                    viewTarget.sprite = null;
-                }
-
-                return;
-            }
-
-            gameObject.name = $"ScrollElement_{data.ElementId}";
+            gameObject.name = data != null ? $"DragElement_{data.ElementId}" : "DragElement_Empty";
 
             if (viewTarget != null)
             {
-                viewTarget.sprite = data.ElementView;
+                viewTarget.sprite = data != null ? data.ElementView : null;
             }
         }
 
@@ -60,16 +45,6 @@ namespace CubeGame.Scroll
 
         public virtual void OnDragEnd(Vector2 pointerScreenPosition)
         {
-        }
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            if (Data == null || pressedPublisher == null)
-            {
-                return;
-            }
-
-            pressedPublisher.Publish(new ScrollElementPressedMessage(this, eventData.position));
         }
 
         protected virtual void OnEnable()
@@ -121,7 +96,7 @@ namespace CubeGame.Scroll
 
         private void OnDragSessionStarted(DragSessionStartedMessage message)
         {
-            if (message.ScrollElement != this)
+            if (message.DragElement != this)
             {
                 return;
             }
@@ -131,17 +106,18 @@ namespace CubeGame.Scroll
 
         private void OnDragSessionMoved(DragSessionMovedMessage message)
         {
-            if (message.ScrollElement != this)
+            if (message.DragElement != this)
             {
                 return;
             }
 
+            Root.position = message.TargetPosition;
             OnDrag(message.PointerScreenPosition);
         }
 
         private void OnDragSessionEnded(DragSessionEndedMessage message)
         {
-            if (message.ScrollElement != this)
+            if (message.DragElement != this)
             {
                 return;
             }

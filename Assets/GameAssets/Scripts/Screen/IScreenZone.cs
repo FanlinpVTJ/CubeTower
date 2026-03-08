@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CubeGame.Screen
 {
@@ -20,5 +21,10 @@ namespace CubeGame.Screen
     public interface IScrollZone : IScreenZone
     {
         RectTransform ContentRoot { get; }
+    }
+
+    public interface IScrollView
+    {
+        ScrollRect Scroll { get; }
     }
 }
