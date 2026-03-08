@@ -22,7 +22,7 @@ namespace CubeGame.Scroll
             }
         }
 
-        public IScrollElement Create(string elementId, Sprite elementView)
+        public IScrollElement Create(ScrollElementData data)
         {
             var instance = _container.InstantiatePrefab(_elementPrefab.gameObject, _scrollZone.ContentRoot);
             var element = instance.GetComponent<ScrollElementBase>();
@@ -32,7 +32,7 @@ namespace CubeGame.Scroll
                 throw new ZenjectException("[ScrollElementFactory] Created object has no ScrollElementBase.");
             }
 
-            element.Initialize(elementId, elementView);
+            element.Initialize(data);
             return element;
         }
     }

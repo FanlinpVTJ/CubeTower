@@ -10,16 +10,30 @@ namespace CubeGame.Scroll
         [SerializeField] private Image viewTarget;
 
         public RectTransform Root => root != null ? root : (RectTransform)transform;
-        public string ElementId { get; private set; }
+        public ScrollElementData Data { get; private set; }
+        public string ElementId => Data != null ? Data.ElementId : string.Empty;
 
-        public virtual void Initialize(string elementId, Sprite elementView)
+        public virtual void Initialize(ScrollElementData data)
         {
-            ElementId = elementId;
-            gameObject.name = $"ScrollElement_{elementId}";
+            Data = data;
+
+            if (data == null)
+            {
+                gameObject.name = "ScrollElement_Empty";
+
+                if (viewTarget != null)
+                {
+                    viewTarget.sprite = null;
+                }
+
+                return;
+            }
+
+            gameObject.name = $"ScrollElement_{data.ElementId}";
 
             if (viewTarget != null)
             {
-                viewTarget.sprite = elementView;
+                viewTarget.sprite = data.ElementView;
             }
         }
 

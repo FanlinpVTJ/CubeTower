@@ -5,7 +5,8 @@ namespace CubeGame.Scroll
     public interface IScrollElement
     {
         RectTransform Root { get; }
+        ScrollElementData Data { get; }
         string ElementId { get; }
-        void Initialize(string elementId, Sprite elementView);
+        void Initialize(ScrollElementData data);
     }
 }
