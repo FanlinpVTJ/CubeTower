@@ -7,9 +7,9 @@ namespace CubeGame.Screen
     public sealed class ScreenZonesInstaller : MonoInstaller<ScreenZonesInstaller>
     {
         [Header("Zone Prefabs")]
-        [SerializeField] private LeftZoneView leftZonePrefab;
-        [SerializeField] private RightZoneView rightZonePrefab;
-        [SerializeField] private ScrollZoneView scrollZonePrefab;
+        [SerializeField] private ScreenZoneBase leftZonePrefab;
+        [SerializeField] private ScreenZoneBase rightZonePrefab;
+        [SerializeField] private ScreenZoneBase scrollZonePrefab;
 
         public override void InstallBindings()
         {
