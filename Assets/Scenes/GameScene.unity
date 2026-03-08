@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 144108571}
   - component: {fileID: 144108570}
   - component: {fileID: 144108572}
+  - component: {fileID: 144108573}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -158,6 +159,7 @@ MonoBehaviour:
   - {fileID: 144108571}
   - {fileID: 144108570}
   - {fileID: 144108572}
+  - {fileID: 144108573}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -246,6 +248,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dragElementPrefab: {fileID: 4025612156327937840, guid: 13cd99fe7f690fe48b4aba1b35ebbbbe, type: 3}
   dragElementsRoot: {fileID: 799090168}
+--- !u!114 &144108573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144108566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9395a0ebe57e471498a19262e3249472, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerConfig: {fileID: 11400000, guid: 7e729aea738ad834a8cac12a34b289d3, type: 2}
 --- !u!1 &799090164
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@ using MessagePipe;
 using UnityEngine;
 using Zenject;
 using CubeGame.Input;
+using CubeGame.Tower;
 
 namespace CubeGame.Scroll
 {
@@ -29,6 +30,7 @@ namespace CubeGame.Scroll
             Container.BindMessageBroker<DragSessionStartedMessage>(options);
             Container.BindMessageBroker<DragSessionMovedMessage>(options);
             Container.BindMessageBroker<DragSessionEndedMessage>(options);
+            Container.BindMessageBroker<TowerActionMessage>(options);
 
             Container.Bind<ScrollRuntimeConfig>().FromInstance(runtimeConfig).AsSingle();
             Container.Bind<ScrollFeedConfig>().FromInstance(feedConfig).AsSingle();
