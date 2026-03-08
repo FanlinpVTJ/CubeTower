@@ -25,10 +25,7 @@ namespace CubeGame.Tower
             }
 
             Camera eventCamera = ResolveEventCamera(rightZone.Root);
-            bool isInside = RectTransformUtility.RectangleContainsScreenPoint(
-                rightZone.Root,
-                context.CandidatePosition,
-                eventCamera);
+            bool isInside = IsInsideRightZoneWithFullElement(context, rightZone.Root, eventCamera);
 
             if (isInside)
             {
@@ -36,6 +33,36 @@ namespace CubeGame.Tower
             }
 
             return TowerPlacementFailureReasonType.NotInRightZone;
+        }
+
+        private bool IsInsideRightZoneWithFullElement(
+            TowerPlacementContext context,
+            RectTransform zoneRoot,
+            Camera eventCamera)
+        {
+            Vector2 localPoint;
+            bool isConverted = RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                zoneRoot,
+                context.CandidatePosition,
+                eventCamera,
+                out localPoint);
+
+            if (!isConverted)
+            {
+                return false;
+            }
+
+            Rect rect = zoneRoot.rect;
+            float halfWidth = context.ElementSize.x * 0.5f;
+            float halfHeight = context.ElementSize.y * 0.5f;
+            float minX = rect.xMin + halfWidth;
+            float maxX = rect.xMax - halfWidth;
+            float minY = rect.yMin + halfHeight;
+            float maxY = rect.yMax - halfHeight;
+            bool isInsideX = localPoint.x >= minX && localPoint.x <= maxX;
+            bool isInsideY = localPoint.y >= minY && localPoint.y <= maxY;
+
+            return isInsideX && isInsideY;
         }
 
         private Camera ResolveEventCamera(RectTransform zoneRoot)
