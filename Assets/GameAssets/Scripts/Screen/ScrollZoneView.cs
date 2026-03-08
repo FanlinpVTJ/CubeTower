@@ -5,7 +5,17 @@ namespace CubeGame
 {
     public class ScrollZoneView : ScreenZoneBase, IScrollZone
     {
-        public RectTransform ContentRoot => throw new System.NotImplementedException();
+        [SerializeField] private RectTransform contentRoot;
 
+        public RectTransform ContentRoot => contentRoot != null ? contentRoot : Root;
+
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+            if (contentRoot == null)
+            {
+                contentRoot = Root;
+            }
+        }
     }
 }

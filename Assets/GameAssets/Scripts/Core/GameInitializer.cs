@@ -7,7 +7,7 @@ namespace CubeGame
     public class GameInitializer : MonoBehaviour
     {
         [Inject]
-        private IScrollZone _rightZone;
+        private IRightZone _rightZone;
         [Inject]
         private ILeftZone _leftZone;
         [Inject]

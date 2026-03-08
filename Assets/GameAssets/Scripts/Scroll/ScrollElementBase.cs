@@ -1,13 +1,17 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using MessagePipe;
+using Zenject;
 
 namespace CubeGame.Scroll
 {
     [RequireComponent(typeof(RectTransform))]
-    public abstract class ScrollElementBase : MonoBehaviour, IScrollElement
+    public abstract class ScrollElementBase : MonoBehaviour, IScrollElement, IPointerDownHandler
     {
         [SerializeField] private RectTransform root;
         [SerializeField] private Image viewTarget;
+        [Inject(Optional = true)] private IPublisher<ScrollElementPressedMessage> pressedPublisher;
 
         public RectTransform Root => root != null ? root : (RectTransform)transform;
         public ScrollElementData Data { get; private set; }
@@ -35,6 +39,16 @@ namespace CubeGame.Scroll
             {
                 viewTarget.sprite = data.ElementView;
             }
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (Data == null || pressedPublisher == null)
+            {
+                return;
+            }
+
+            pressedPublisher.Publish(new ScrollElementPressedMessage(this));
         }
 
         protected virtual void Reset()
