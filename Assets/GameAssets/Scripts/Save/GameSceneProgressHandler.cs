@@ -6,7 +6,7 @@ using Zenject;
 
 namespace CubeGame.Save
 {
-    public sealed class GameSceneProgressHandler : IInitializable, IDisposable
+    public sealed class GameSceneProgressHandler : IGameSceneProgressHandler, IInitializable, IDisposable
     {
         private readonly IGameSaver gameSaver;
         private readonly ITowerService towerService;
@@ -61,7 +61,7 @@ namespace CubeGame.Save
             SaveProgress();
         }
 
-        private void SaveProgress()
+        public void SaveProgress()
         {
             if (gameSaver == null || towerService == null)
             {

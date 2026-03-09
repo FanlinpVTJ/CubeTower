@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace CubeGame.Save
@@ -6,26 +7,27 @@ namespace CubeGame.Save
     {
         private const string SAVE_KEY = "cube_game_progress";
 
-        public bool HasSave { get; private set; }
+        public event Action OnInitialized;
+
+        public bool IsInitialized { get; private set; }
+        public bool HasSave => PlayerPrefs.HasKey(SAVE_KEY);
 
         public void Initialize()
         {
-            HasSave = PlayerPrefs.HasKey(SAVE_KEY);
+            IsInitialized = true;
+            OnInitialized?.Invoke();
         }
 
         public void SaveProgress(GameSaveData saveData)
         {
             if (saveData == null)
             {
-                HasSave = PlayerPrefs.HasKey(SAVE_KEY);
-
                 return;
             }
 
             string json = JsonUtility.ToJson(saveData);
             PlayerPrefs.SetString(SAVE_KEY, json);
             PlayerPrefs.Save();
-            HasSave = true;
         }
 
         public bool TryLoadProgress(out GameSaveData saveData)
@@ -34,8 +36,6 @@ namespace CubeGame.Save
 
             if (!PlayerPrefs.HasKey(SAVE_KEY))
             {
-                HasSave = false;
-
                 return false;
             }
 
@@ -43,8 +43,6 @@ namespace CubeGame.Save
 
             if (string.IsNullOrEmpty(json))
             {
-                HasSave = false;
-
                 return false;
             }
 
@@ -52,12 +50,8 @@ namespace CubeGame.Save
 
             if (saveData == null)
             {
-                HasSave = false;
-
                 return false;
             }
-            
-            HasSave = true;
 
             return true;
         }
@@ -66,7 +60,6 @@ namespace CubeGame.Save
         {
             PlayerPrefs.DeleteKey(SAVE_KEY);
             PlayerPrefs.Save();
-            HasSave = false;
         }
     }
 }
