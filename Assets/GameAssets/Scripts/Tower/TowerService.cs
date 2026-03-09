@@ -79,8 +79,6 @@ namespace CubeGame.Tower
                 dragElement.Root.SetParent(rightZone.Root, true);
             }
 
-            dragElement.Root.position = candidatePosition;
-
             TowerBlockEntry blockEntry = new TowerBlockEntry(
                 dragElement,
                 ResolveElementIdentifier(dragElement),

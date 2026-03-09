@@ -100,7 +100,11 @@ namespace CubeGame.Tower
 
             if (placementResult.IsSuccess)
             {
-                DragSessionPlacedMessage placedMessage = new DragSessionPlacedMessage(message.ScrollElement, message.DragElement);
+                DragSessionPlacedMessage placedMessage = new DragSessionPlacedMessage(
+                    message.ScrollElement,
+                    message.DragElement,
+                    placementResult.TargetPosition,
+                    ResolvePlacedAnimationDuration());
                 dragSessionPlacedPublisher.Publish(placedMessage);
                 PublishAction(TowerActionType.BlockPlaced, ResolvePlacedText());
 
@@ -149,6 +153,7 @@ namespace CubeGame.Tower
             }
 
             float animationDuration = ResolveTowerShiftAnimationDuration();
+            float stepDelay = ResolveTowerShiftStepDelay();
 
             for (int i = 0; i < shiftedBlocks.Count; i++)
             {
@@ -162,7 +167,8 @@ namespace CubeGame.Tower
                 TowerBlockShiftedMessage shiftedMessage = new TowerBlockShiftedMessage(
                     shiftedBlock.DragElement,
                     shiftedBlock.TargetPosition,
-                    animationDuration);
+                    animationDuration,
+                    stepDelay * i);
                 towerBlockShiftedPublisher.Publish(shiftedMessage);
             }
         }
@@ -181,6 +187,16 @@ namespace CubeGame.Tower
             }
 
             return towerConfig.BlockPlacedText;
+        }
+
+        private float ResolvePlacedAnimationDuration()
+        {
+            if (towerConfig == null)
+            {
+                return 0.18f;
+            }
+
+            return towerConfig.BlockPlacedAnimationDuration;
         }
 
         private string ResolveRemovedText()
@@ -256,6 +272,16 @@ namespace CubeGame.Tower
             }
 
             return holeConfig.TowerShiftAnimationDuration;
+        }
+
+        private float ResolveTowerShiftStepDelay()
+        {
+            if (towerConfig == null)
+            {
+                return 0.04f;
+            }
+
+            return towerConfig.TowerShiftStepDelay;
         }
     }
 }

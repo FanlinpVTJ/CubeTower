@@ -18,7 +18,7 @@ namespace CubeGame.Tower
                 return TowerPlacementFailureReasonType.None;
             }
 
-            bool isPointerOverTopBlock = IsPointerInsideBlock(context.PointerScreenPosition, topBlock);
+            bool isPointerOverTopBlock = IsPointerInsideBlock(context.DragPosition, topBlock);
 
             if (isPointerOverTopBlock)
             {

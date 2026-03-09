@@ -7,6 +7,8 @@ namespace CubeGame.Tower
     {
         [SerializeField] private float maxHorizontalOffsetFactor = 0.5f;
         [SerializeField] private float firstBlockCenterBias = 0.2f;
+        [SerializeField] private float blockPlacedAnimationDuration = 0.18f;
+        [SerializeField] private float towerShiftStepDelay = 0.04f;
         [SerializeField] private string blockPlacedText = "Block placed";
         [SerializeField] private string blockRemovedText = "Block removed";
         [SerializeField] private string blockReturnedText = "Block returned";
@@ -15,6 +17,8 @@ namespace CubeGame.Tower
 
         public float MaxHorizontalOffsetFactor => maxHorizontalOffsetFactor;
         public float FirstBlockCenterBias => firstBlockCenterBias;
+        public float BlockPlacedAnimationDuration => blockPlacedAnimationDuration;
+        public float TowerShiftStepDelay => towerShiftStepDelay;
         public string BlockPlacedText => blockPlacedText;
         public string BlockRemovedText => blockRemovedText;
         public string BlockReturnedText => blockReturnedText;

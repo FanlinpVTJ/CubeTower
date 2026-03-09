@@ -16,6 +16,7 @@ namespace CubeGame.Drag
         private const float START_SCALE = 0.92f;
         private const float END_SCALE = 1f;
         private const float BOUNCE_DURATION = 0.2f;
+        private const float PLACED_HOLDER_OFFSET_Y = 36f;
 
         private Tween scaleTween;
         private Tween positionTween;
@@ -79,6 +80,19 @@ namespace CubeGame.Drag
                 });
         }
 
+        protected override void HandleDragSessionPlaced(DragSessionPlacedMessage message)
+        {
+            KillScaleTween();
+            KillPositionTween();
+            KillHolderTween();
+            AnimatePlacementHolder(message.AnimationDuration);
+            positionTween = Root.DOMove(message.TargetPosition, message.AnimationDuration)
+                .SetEase(Ease.OutQuad);
+            Root.localScale = Vector3.one * START_SCALE;
+            scaleTween = Root.DOScale(END_SCALE, message.AnimationDuration)
+                .SetEase(Ease.OutBack);
+        }
+
         protected override void HandleDragSessionDisposalStarted(DragSessionDisposalStartedMessage message)
         {
             KillScaleTween();
@@ -107,6 +121,7 @@ namespace CubeGame.Drag
         {
             KillPositionTween();
             positionTween = Root.DOMove(message.TargetPosition, message.AnimationDuration)
+                .SetDelay(message.StartDelay)
                 .SetEase(Ease.OutQuad);
         }
 
@@ -144,6 +159,18 @@ namespace CubeGame.Drag
             Vector3 localOffset = Root.InverseTransformVector(worldOffset);
             animationHolder.localPosition = localOffset;
             holderTween = animationHolder.DOLocalMove(Vector3.zero, message.AnimationDuration).SetEase(Ease.OutQuad);
+        }
+
+        private void AnimatePlacementHolder(float animationDuration)
+        {
+            if (animationHolder == null)
+            {
+                return;
+            }
+
+            Vector3 startPosition = new Vector3(0f, PLACED_HOLDER_OFFSET_Y, 0f);
+            animationHolder.localPosition = startPosition;
+            holderTween = animationHolder.DOLocalMove(Vector3.zero, animationDuration).SetEase(Ease.OutBounce);
         }
 
         private void ResetAnimationHolder()
