@@ -5,8 +5,8 @@ namespace CubeGame.Save
     public interface IGameSaver : IInitializable
     {
         bool HasSave { get; }
-        void SaveProgress();
-        bool TryRestoreProgress();
+        void SaveProgress(GameSaveData saveData);
+        bool TryLoadProgress(out GameSaveData saveData);
         void ClearProgress();
     }
 }

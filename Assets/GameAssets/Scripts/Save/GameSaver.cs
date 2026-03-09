@@ -1,14 +1,10 @@
-using CubeGame.Tower;
 using UnityEngine;
-using Zenject;
 
 namespace CubeGame.Save
 {
     public sealed class GameSaver : IGameSaver
     {
         private const string SAVE_KEY = "cube_game_progress";
-
-        [Inject(Optional = true)] private ITowerService towerService;
 
         public bool HasSave { get; private set; }
 
@@ -17,35 +13,28 @@ namespace CubeGame.Save
             HasSave = PlayerPrefs.HasKey(SAVE_KEY);
         }
 
-        public void SaveProgress()
+        public void SaveProgress(GameSaveData saveData)
         {
-            if (towerService == null)
+            if (saveData == null)
             {
                 HasSave = PlayerPrefs.HasKey(SAVE_KEY);
 
                 return;
             }
 
-            TowerSnapshot towerSnapshot = towerService.GetSnapshot();
-            GameSaveData saveData = new GameSaveData(towerSnapshot);
             string json = JsonUtility.ToJson(saveData);
             PlayerPrefs.SetString(SAVE_KEY, json);
             PlayerPrefs.Save();
             HasSave = true;
         }
 
-        public bool TryRestoreProgress()
+        public bool TryLoadProgress(out GameSaveData saveData)
         {
+            saveData = null;
+
             if (!PlayerPrefs.HasKey(SAVE_KEY))
             {
                 HasSave = false;
-
-                return false;
-            }
-
-            if (towerService == null)
-            {
-                HasSave = true;
 
                 return false;
             }
@@ -59,7 +48,7 @@ namespace CubeGame.Save
                 return false;
             }
 
-            GameSaveData saveData = JsonUtility.FromJson<GameSaveData>(json);
+            saveData = JsonUtility.FromJson<GameSaveData>(json);
 
             if (saveData == null)
             {
@@ -67,8 +56,7 @@ namespace CubeGame.Save
 
                 return false;
             }
-
-            towerService.Restore(saveData.TowerSnapshot);
+            
             HasSave = true;
 
             return true;
@@ -76,11 +64,6 @@ namespace CubeGame.Save
 
         public void ClearProgress()
         {
-            if (towerService != null)
-            {
-                towerService.Clear();
-            }
-
             PlayerPrefs.DeleteKey(SAVE_KEY);
             PlayerPrefs.Save();
             HasSave = false;
