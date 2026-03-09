@@ -137,6 +137,7 @@ GameObject:
   - component: {fileID: 144108570}
   - component: {fileID: 144108572}
   - component: {fileID: 144108573}
+  - component: {fileID: 144108574}
   m_Layer: 0
   m_Name: SceneContext
   m_TagString: Untagged
@@ -249,7 +250,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4b2b9732ad30bd4aa952e29cb0c8402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dragElementPrefab: {fileID: 4025612156327937840, guid: 13cd99fe7f690fe48b4aba1b35ebbbbe, type: 3}
+  dragElementPoolGroup:
+    _poolId: 
+    _prefab: {fileID: 1969645759995784889, guid: 13cd99fe7f690fe48b4aba1b35ebbbbe, type: 3}
+    _initialSize: 0
+    _maxSize: 0
+    _poolExpandMethod: 0
   dragElementsRoot: {fileID: 799090168}
 --- !u!114 &144108573
 MonoBehaviour:
@@ -264,6 +270,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerConfig: {fileID: 11400000, guid: 7e729aea738ad834a8cac12a34b289d3, type: 2}
+--- !u!114 &144108574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144108566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6277b32ea2426943a7938efee3f87ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &799090164
 GameObject:
   m_ObjectHideFlags: 0

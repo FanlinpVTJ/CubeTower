@@ -23,6 +23,7 @@ namespace CubeGame.Scroll
         private IDisposable dragEndedSubscription;
 
         public RectTransform Root => root != null ? root : (RectTransform)transform;
+        protected Image ViewTarget => viewTarget;
         public ScrollElementData Data { get; private set; }
         public string ElementId => Data != null ? Data.ElementId : string.Empty;
 
