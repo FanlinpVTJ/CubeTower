@@ -8,6 +8,7 @@ namespace CubeGame.Tower
 
         public List<TowerBlockEntry> Blocks => blocks;
         public bool HasBlocks => blocks.Count > 0;
+        public bool IsHeightLimitReached { get; private set; }
 
         public void AddBlock(TowerBlockEntry blockEntry)
         {
@@ -27,6 +28,11 @@ namespace CubeGame.Tower
             }
 
             return blocks[blocks.Count - 1];
+        }
+
+        public void MarkHeightLimitReached()
+        {
+            IsHeightLimitReached = true;
         }
     }
 }

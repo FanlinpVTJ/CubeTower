@@ -16,12 +16,15 @@ namespace CubeGame.Drag
         [Inject(Optional = true)] private ISubscriber<DragSessionStartedMessage> dragStartedSubscriber;
         [Inject(Optional = true)] private ISubscriber<DragSessionMovedMessage> dragMovedSubscriber;
         [Inject(Optional = true)] private ISubscriber<DragSessionEndedMessage> dragEndedSubscriber;
+        [Inject(Optional = true)] private ISubscriber<DragSessionCancelledMessage> dragCancelledSubscriber;
 
         private IDisposable dragStartedSubscription;
         private IDisposable dragMovedSubscription;
         private IDisposable dragEndedSubscription;
+        private IDisposable dragCancelledSubscription;
 
         public RectTransform Root => root != null ? root : (RectTransform)transform;
+        protected Image ViewTarget => viewTarget;
         public ScrollElementData Data { get; private set; }
 
         public virtual void Initialize(ScrollElementData data)
@@ -63,6 +66,11 @@ namespace CubeGame.Drag
             {
                 dragEndedSubscription = dragEndedSubscriber.Subscribe(OnDragSessionEnded);
             }
+
+            if (dragCancelledSubscriber != null)
+            {
+                dragCancelledSubscription = dragCancelledSubscriber.Subscribe(OnDragSessionCancelled);
+            }
         }
 
         protected virtual void OnDisable()
@@ -73,6 +81,8 @@ namespace CubeGame.Drag
             dragMovedSubscription = null;
             dragEndedSubscription?.Dispose();
             dragEndedSubscription = null;
+            dragCancelledSubscription?.Dispose();
+            dragCancelledSubscription = null;
         }
 
         protected virtual void Reset()
@@ -101,6 +111,7 @@ namespace CubeGame.Drag
                 return;
             }
 
+            HandleDragSessionStarted(message);
             OnDragStart(message.PointerScreenPosition);
         }
 
@@ -123,6 +134,24 @@ namespace CubeGame.Drag
             }
 
             OnDragEnd(message.PointerScreenPosition);
+        }
+
+        private void OnDragSessionCancelled(DragSessionCancelledMessage message)
+        {
+            if (message.DragElement != this)
+            {
+                return;
+            }
+
+            HandleDragSessionCancelled(message);
+        }
+
+        protected virtual void HandleDragSessionStarted(DragSessionStartedMessage message)
+        {
+        }
+
+        protected virtual void HandleDragSessionCancelled(DragSessionCancelledMessage message)
+        {
         }
     }
 }

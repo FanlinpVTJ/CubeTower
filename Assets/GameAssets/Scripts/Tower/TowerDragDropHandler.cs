@@ -1,5 +1,6 @@
 using System;
 using CubeGame.Input;
+using CubeGame.Scroll;
 using MessagePipe;
 using UnityEngine;
 using Zenject;
@@ -11,7 +12,10 @@ namespace CubeGame.Tower
         private readonly ISubscriber<DragSessionEndedMessage> dragSessionEndedSubscriber;
         private readonly ITowerService towerService;
         private readonly IPublisher<TowerActionMessage> towerActionPublisher;
+        private readonly IPublisher<DragSessionCancelledMessage> dragSessionCancelledPublisher;
+        private readonly IPublisher<DragSessionPlacedMessage> dragSessionPlacedPublisher;
         private readonly TowerConfig towerConfig;
+        private readonly ScrollRuntimeConfig runtimeConfig;
 
         private IDisposable dragSessionEndedSubscription;
 
@@ -19,12 +23,18 @@ namespace CubeGame.Tower
             ISubscriber<DragSessionEndedMessage> dragSessionEndedSubscriber,
             ITowerService towerService,
             IPublisher<TowerActionMessage> towerActionPublisher,
-            TowerConfig towerConfig)
+            IPublisher<DragSessionCancelledMessage> dragSessionCancelledPublisher,
+            IPublisher<DragSessionPlacedMessage> dragSessionPlacedPublisher,
+            TowerConfig towerConfig,
+            ScrollRuntimeConfig runtimeConfig)
         {
             this.dragSessionEndedSubscriber = dragSessionEndedSubscriber;
             this.towerService = towerService;
             this.towerActionPublisher = towerActionPublisher;
+            this.dragSessionCancelledPublisher = dragSessionCancelledPublisher;
+            this.dragSessionPlacedPublisher = dragSessionPlacedPublisher;
             this.towerConfig = towerConfig;
+            this.runtimeConfig = runtimeConfig;
         }
 
         public void Initialize()
@@ -49,7 +59,15 @@ namespace CubeGame.Tower
 
             if (placementResult.IsSuccess)
             {
+                DragSessionPlacedMessage placedMessage = new DragSessionPlacedMessage(message.ScrollElement, message.DragElement);
+                dragSessionPlacedPublisher.Publish(placedMessage);
                 PublishAction(TowerActionType.BlockPlaced, ResolvePlacedText());
+
+                if (placementResult.HasReachedHeightLimit)
+                {
+                    PublishAction(TowerActionType.HeightLimitReached, ResolveHeightLimitText());
+                }
+
                 return;
             }
 
@@ -62,7 +80,13 @@ namespace CubeGame.Tower
                 PublishAction(TowerActionType.BlockMissed, ResolveMissedText());
             }
 
-            UnityEngine.Object.Destroy(message.DragElement.Root.gameObject);
+            Vector2 returnPosition = ResolveReturnPosition(message);
+            DragSessionCancelledMessage cancelledMessage = new DragSessionCancelledMessage(
+                message.ScrollElement,
+                message.DragElement,
+                returnPosition,
+                ResolveCancelAnimationDuration());
+            dragSessionCancelledPublisher.Publish(cancelledMessage);
         }
 
         private void PublishAction(TowerActionType actionType, string text)
@@ -99,6 +123,26 @@ namespace CubeGame.Tower
             }
 
             return towerConfig.HeightLimitReachedText;
+        }
+
+        private Vector2 ResolveReturnPosition(DragSessionEndedMessage message)
+        {
+            if (message.ScrollElement == null || message.ScrollElement.Root == null)
+            {
+                return message.DragElement.Root.position;
+            }
+
+            return message.ScrollElement.Root.position;
+        }
+
+        private float ResolveCancelAnimationDuration()
+        {
+            if (runtimeConfig == null)
+            {
+                return 0.18f;
+            }
+
+            return runtimeConfig.DragCancelAnimationDuration;
         }
     }
 }

@@ -30,6 +30,9 @@ namespace CubeGame.Scroll
             Container.BindMessageBroker<DragSessionStartedMessage>(options);
             Container.BindMessageBroker<DragSessionMovedMessage>(options);
             Container.BindMessageBroker<DragSessionEndedMessage>(options);
+            Container.BindMessageBroker<DragSessionCancelledMessage>(options);
+            Container.BindMessageBroker<DragSessionPlacedMessage>(options);
+            Container.BindMessageBroker<DragSessionReturnedMessage>(options);
             Container.BindMessageBroker<TowerActionMessage>(options);
 
             Container.Bind<ScrollRuntimeConfig>().FromInstance(runtimeConfig).AsSingle();

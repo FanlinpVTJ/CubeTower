@@ -4,9 +4,7 @@ namespace CubeGame.Tower
     {
         public TowerPlacementFailureReasonType Validate(TowerPlacementContext context, TowerState towerState)
         {
-            float topEdge = context.CandidatePosition.y + context.ElementSize.y * 0.5f;
-
-            if (topEdge <= UnityEngine.Screen.height)
+            if (towerState == null || !towerState.IsHeightLimitReached)
             {
                 return TowerPlacementFailureReasonType.None;
             }

@@ -86,8 +86,17 @@ namespace CubeGame.Input
             }
 
             activeScrollElement = pendingScrollElement;
-            activeDragElement = dragElementFactory.Create(pendingData, currentPointerPosition + GetDragOffsetUI());
-            startedPublisher.Publish(new DragSessionStartedMessage(activeScrollElement, activeDragElement, currentPointerPosition));
+            Vector2 startPosition = activeScrollElement.Root.position;
+            Vector2 targetPosition = currentPointerPosition + GetDragOffsetUI();
+            float animationDuration = GetDragStartAnimationDuration();
+            activeDragElement = dragElementFactory.Create(pendingData, startPosition);
+            startedPublisher.Publish(new DragSessionStartedMessage(
+                activeScrollElement,
+                activeDragElement,
+                currentPointerPosition,
+                startPosition,
+                targetPosition,
+                animationDuration));
             pendingScrollElement = null;
             pendingData = null;
         }
@@ -140,6 +149,16 @@ namespace CubeGame.Input
             }
 
             return runtimeConfig.ScrollVelocityToStartDrag;
+        }
+
+        private float GetDragStartAnimationDuration()
+        {
+            if (runtimeConfig == null)
+            {
+                return 0.12f;
+            }
+
+            return runtimeConfig.DragStartAnimationDuration;
         }
     }
 }

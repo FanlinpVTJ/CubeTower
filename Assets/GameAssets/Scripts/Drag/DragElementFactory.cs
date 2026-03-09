@@ -1,4 +1,5 @@
 using CubeGame.Scroll;
+using CubeGame.ObjectPoolManager;
 using UnityEngine;
 using Zenject;
 
@@ -6,26 +7,26 @@ namespace CubeGame.Drag
 {
     public sealed class DragElementFactory : IDragElementFactory
     {
-        private readonly DiContainer container;
-        private readonly DragElementBase elementPrefab;
+        private readonly PoolManager poolManager;
+        private readonly PoolGroup dragElementPoolGroup;
         private readonly RectTransform dragElementsRoot;
 
-        public DragElementFactory(DiContainer container, DragElementBase elementPrefab, RectTransform dragElementsRoot)
+        public DragElementFactory(PoolManager poolManager, PoolGroup dragElementPoolGroup, RectTransform dragElementsRoot)
         {
-            this.container = container;
-            this.elementPrefab = elementPrefab;
+            this.poolManager = poolManager;
+            this.dragElementPoolGroup = dragElementPoolGroup;
             this.dragElementsRoot = dragElementsRoot;
 
-            if (this.elementPrefab == null)
+            if (this.dragElementPoolGroup == null)
             {
-                throw new ZenjectException("[DragElementFactory] Drag element prefab is not assigned.");
+                throw new ZenjectException("[DragElementFactory] Drag element pool group is not assigned.");
             }
         }
 
         public IDragElement Create(ScrollElementData data, Vector3 worldPosition)
         {
-            var instance = container.InstantiatePrefab(elementPrefab.gameObject, dragElementsRoot);
-            var element = instance.GetComponent<DragElementBase>();
+            PooledObject pooledObject = poolManager.InstantiateFromGroup(dragElementPoolGroup, dragElementsRoot);
+            DragElementBase element = pooledObject.GetComponent<DragElementBase>();
 
             if (element == null)
             {
@@ -34,6 +35,7 @@ namespace CubeGame.Drag
 
             element.Initialize(data);
             element.Root.position = worldPosition;
+
             return element;
         }
     }

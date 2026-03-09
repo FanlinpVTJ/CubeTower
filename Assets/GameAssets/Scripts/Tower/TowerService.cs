@@ -34,25 +34,39 @@ namespace CubeGame.Tower
                 TowerPlacementResult invalidResult = new TowerPlacementResult(
                     false,
                     TowerPlacementFailureReasonType.InvalidElement,
-                    Vector2.zero);
+                    Vector2.zero,
+                    false);
 
                 return invalidResult;
             }
 
             Vector2 elementSize = ResolveElementSize(dragElement.Root);
+            Vector2 dragPosition = dragElement.Root.position;
             Vector2 candidatePosition = ResolveCandidatePosition(dragElement, pointerScreenPosition, elementSize);
             TowerPlacementContext context = new TowerPlacementContext(
                 dragElement,
                 pointerScreenPosition,
+                dragPosition,
                 candidatePosition,
                 elementSize);
             TowerPlacementFailureReasonType failureReason = ruleValidator.Validate(context, towerState);
 
             if (failureReason != TowerPlacementFailureReasonType.None)
             {
-                TowerPlacementResult failureResult = new TowerPlacementResult(false, failureReason, candidatePosition);
-
+                TowerPlacementResult failureResult = new TowerPlacementResult(
+                    false,
+                    failureReason,
+                    candidatePosition,
+                    false);
+                
                 return failureResult;
+            }
+
+            bool hasReachedHeightLimit = IsPlacementOverHeight(candidatePosition, elementSize);
+
+            if (hasReachedHeightLimit)
+            {
+                towerState.MarkHeightLimitReached();
             }
 
             if (rightZone != null && rightZone.Root != null)
@@ -72,7 +86,8 @@ namespace CubeGame.Tower
             TowerPlacementResult successResult = new TowerPlacementResult(
                 true,
                 TowerPlacementFailureReasonType.None,
-                candidatePosition);
+                candidatePosition,
+                hasReachedHeightLimit);
 
             return successResult;
         }
@@ -183,6 +198,13 @@ namespace CubeGame.Tower
             }
 
             return canvas.worldCamera;
+        }
+
+        private bool IsPlacementOverHeight(Vector2 candidatePosition, Vector2 elementSize)
+        {
+            float topEdge = candidatePosition.y + elementSize.y * 0.5f;
+
+            return topEdge > UnityEngine.Screen.height;
         }
     }
 }
