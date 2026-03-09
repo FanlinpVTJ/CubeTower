@@ -7,9 +7,9 @@ namespace CubeGame.Screen
     public sealed class ScreenZonesInstaller : MonoInstaller<ScreenZonesInstaller>
     {
         [Header("Zone Prefabs")]
-        [SerializeField] private LeftZoneView leftZonePrefab;
-        [SerializeField] private RightZoneView rightZonePrefab;
-        [SerializeField] private ScrollZoneView scrollZonePrefab;
+        [SerializeField] private ScreenZoneBase leftZonePrefab;
+        [SerializeField] private ScreenZoneBase rightZonePrefab;
+        [SerializeField] private ScreenZoneBase scrollZonePrefab;
 
         public override void InstallBindings()
         {
@@ -20,6 +20,15 @@ namespace CubeGame.Screen
             Container.Bind<ILeftZone>().FromInstance(leftZone).AsSingle();
             Container.Bind<IRightZone>().FromInstance(rightZone).AsSingle();
             Container.Bind<IScrollZone>().FromInstance(scrollZone).AsSingle();
+
+            if (scrollZone is IScrollView scrollView)
+            {
+                Container.Bind<IScrollView>().FromInstance(scrollView).AsSingle();
+            }
+            else
+            {
+                throw new ZenjectException("[ScreenZonesInstaller] Scroll zone prefab must implement IScrollView.");
+            }
         }
 
         private TZone SpawnAndResolve<TZone>(MonoBehaviour prefab, string fieldName) where TZone : class
