@@ -40,10 +40,12 @@ namespace CubeGame.Tower
             }
 
             Vector2 elementSize = ResolveElementSize(dragElement.Root);
+            Vector2 dragPosition = dragElement.Root.position;
             Vector2 candidatePosition = ResolveCandidatePosition(dragElement, pointerScreenPosition, elementSize);
             TowerPlacementContext context = new TowerPlacementContext(
                 dragElement,
                 pointerScreenPosition,
+                dragPosition,
                 candidatePosition,
                 elementSize);
             TowerPlacementFailureReasonType failureReason = ruleValidator.Validate(context, towerState);
