@@ -251,9 +251,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dragElementPoolGroup:
-    _poolId: 
+    _poolId: DragableObjects
     _prefab: {fileID: 1969645759995784889, guid: 13cd99fe7f690fe48b4aba1b35ebbbbe, type: 3}
-    _initialSize: 0
+    _initialSize: 1
     _maxSize: 0
     _poolExpandMethod: 0
   dragElementsRoot: {fileID: 799090168}
