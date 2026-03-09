@@ -22,6 +22,7 @@ namespace CubeGame.Input
         private IScrollElement activeScrollElement;
         private ScrollElementData pendingData;
         private IDragElement activeDragElement;
+        private Vector2 activeReturnPosition;
         private Vector2 pressPosition;
 
         public ScrollDragSessionController(
@@ -50,6 +51,31 @@ namespace CubeGame.Input
             pendingScrollElement = scrollElement;
             pendingData = scrollElement.Data;
             pressPosition = pointerScreenPosition;
+        }
+
+        public void TryStartFromTower(IDragElement dragElement, Vector2 pointerScreenPosition)
+        {
+            if (dragElement == null || dragElement.Data == null || activeDragElement != null)
+            {
+                return;
+            }
+
+            pendingScrollElement = null;
+            pendingData = null;
+            activeScrollElement = null;
+            activeDragElement = dragElement;
+            activeReturnPosition = dragElement.Root.position;
+            pressPosition = pointerScreenPosition;
+            Vector2 startPosition = activeReturnPosition;
+            Vector2 targetPosition = pointerScreenPosition + GetDragOffsetUI();
+            float animationDuration = GetDragStartAnimationDuration();
+            startedPublisher.Publish(new DragSessionStartedMessage(
+                null,
+                activeDragElement,
+                pointerScreenPosition,
+                startPosition,
+                targetPosition,
+                animationDuration));
         }
 
         public void Tick()
@@ -90,6 +116,7 @@ namespace CubeGame.Input
             Vector2 targetPosition = currentPointerPosition + GetDragOffsetUI();
             float animationDuration = GetDragStartAnimationDuration();
             activeDragElement = dragElementFactory.Create(pendingData, startPosition);
+            activeReturnPosition = startPosition;
             startedPublisher.Publish(new DragSessionStartedMessage(
                 activeScrollElement,
                 activeDragElement,
@@ -116,9 +143,14 @@ namespace CubeGame.Input
                 return;
             }
 
-            endedPublisher.Publish(new DragSessionEndedMessage(activeScrollElement, activeDragElement, currentPointerPosition));
+            endedPublisher.Publish(new DragSessionEndedMessage(
+                activeScrollElement,
+                activeDragElement,
+                currentPointerPosition,
+                activeReturnPosition));
             activeScrollElement = null;
             activeDragElement = null;
+            activeReturnPosition = Vector2.zero;
         }
 
         private float GetDragStartDistancePixels()

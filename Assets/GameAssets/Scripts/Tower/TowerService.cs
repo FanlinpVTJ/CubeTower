@@ -97,6 +97,55 @@ namespace CubeGame.Tower
             return towerState.Blocks;
         }
 
+        public TowerRemovalResult TryRemove(IDragElement dragElement)
+        {
+            if (dragElement == null)
+            {
+                TowerRemovalResult invalidResult = new TowerRemovalResult(
+                    false,
+                    null,
+                    new List<TowerShiftEntry>());
+
+                return invalidResult;
+            }
+
+            List<TowerBlockEntry> blocks = towerState.Blocks;
+            int removedIndex = FindBlockIndex(blocks, dragElement);
+
+            if (removedIndex < 0)
+            {
+                TowerRemovalResult missedResult = new TowerRemovalResult(
+                    false,
+                    null,
+                    new List<TowerShiftEntry>());
+
+                return missedResult;
+            }
+
+            TowerBlockEntry removedBlock = blocks[removedIndex];
+            blocks.RemoveAt(removedIndex);
+            List<TowerShiftEntry> shiftedBlocks = new List<TowerShiftEntry>();
+            float shiftDistance = removedBlock.Size.y;
+
+            for (int i = removedIndex; i < blocks.Count; i++)
+            {
+                TowerBlockEntry block = blocks[i];
+                Vector2 targetPosition = new Vector2(block.Position.x, block.Position.y - shiftDistance);
+                block.Position = targetPosition;
+                TowerShiftEntry shiftEntry = new TowerShiftEntry(block.DragElement, targetPosition);
+                shiftedBlocks.Add(shiftEntry);
+            }
+
+            towerState.SetHeightLimitReached(IsTowerOverHeight());
+
+            TowerRemovalResult result = new TowerRemovalResult(
+                true,
+                removedBlock,
+                shiftedBlocks);
+
+            return result;
+        }
+
         private Vector2 ResolveElementSize(RectTransform rectTransform)
         {
             Vector2 size = rectTransform.rect.size;
@@ -205,6 +254,33 @@ namespace CubeGame.Tower
             float topEdge = candidatePosition.y + elementSize.y * 0.5f;
 
             return topEdge > UnityEngine.Screen.height;
+        }
+
+        private int FindBlockIndex(List<TowerBlockEntry> blocks, IDragElement dragElement)
+        {
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                TowerBlockEntry block = blocks[i];
+
+                if (block.DragElement == dragElement)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        private bool IsTowerOverHeight()
+        {
+            TowerBlockEntry topBlock = towerState.GetTopBlock();
+
+            if (topBlock == null)
+            {
+                return false;
+            }
+
+            return IsPlacementOverHeight(topBlock.Position, topBlock.Size);
         }
     }
 }

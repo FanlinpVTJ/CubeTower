@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using CubeGame.Input;
+using CubeGame.Hole;
 using CubeGame.Scroll;
 using MessagePipe;
 using UnityEngine;
@@ -11,30 +13,42 @@ namespace CubeGame.Tower
     {
         private readonly ISubscriber<DragSessionEndedMessage> dragSessionEndedSubscriber;
         private readonly ITowerService towerService;
+        private readonly IHoleService holeService;
         private readonly IPublisher<TowerActionMessage> towerActionPublisher;
         private readonly IPublisher<DragSessionCancelledMessage> dragSessionCancelledPublisher;
         private readonly IPublisher<DragSessionPlacedMessage> dragSessionPlacedPublisher;
+        private readonly IPublisher<DragSessionDisposalStartedMessage> dragSessionDisposalStartedPublisher;
+        private readonly IPublisher<TowerBlockShiftedMessage> towerBlockShiftedPublisher;
         private readonly TowerConfig towerConfig;
         private readonly ScrollRuntimeConfig runtimeConfig;
+        private readonly HoleConfig holeConfig;
 
         private IDisposable dragSessionEndedSubscription;
 
         public TowerDragDropHandler(
             ISubscriber<DragSessionEndedMessage> dragSessionEndedSubscriber,
             ITowerService towerService,
+            IHoleService holeService,
             IPublisher<TowerActionMessage> towerActionPublisher,
             IPublisher<DragSessionCancelledMessage> dragSessionCancelledPublisher,
             IPublisher<DragSessionPlacedMessage> dragSessionPlacedPublisher,
+            IPublisher<DragSessionDisposalStartedMessage> dragSessionDisposalStartedPublisher,
+            IPublisher<TowerBlockShiftedMessage> towerBlockShiftedPublisher,
             TowerConfig towerConfig,
-            ScrollRuntimeConfig runtimeConfig)
+            ScrollRuntimeConfig runtimeConfig,
+            HoleConfig holeConfig)
         {
             this.dragSessionEndedSubscriber = dragSessionEndedSubscriber;
             this.towerService = towerService;
+            this.holeService = holeService;
             this.towerActionPublisher = towerActionPublisher;
             this.dragSessionCancelledPublisher = dragSessionCancelledPublisher;
             this.dragSessionPlacedPublisher = dragSessionPlacedPublisher;
+            this.dragSessionDisposalStartedPublisher = dragSessionDisposalStartedPublisher;
+            this.towerBlockShiftedPublisher = towerBlockShiftedPublisher;
             this.towerConfig = towerConfig;
             this.runtimeConfig = runtimeConfig;
+            this.holeConfig = holeConfig;
         }
 
         public void Initialize()
@@ -52,6 +66,31 @@ namespace CubeGame.Tower
         {
             if (message.DragElement == null)
             {
+                return;
+            }
+
+            HoleDisposalResult disposalResult = holeService.TryDispose(message.DragElement, message.PointerScreenPosition);
+
+            if (disposalResult.IsSuccess)
+            {
+                TowerRemovalResult removalResult = towerService.TryRemove(message.DragElement);
+                PublishShiftMessages(removalResult.ShiftedBlocks);
+                PublishDisposeMessage(message, disposalResult);
+                PublishAction(TowerActionType.BlockRemoved, ResolveRemovedText());
+
+                return;
+            }
+
+            if (message.ScrollElement == null)
+            {
+                DragSessionCancelledMessage towerCancelledMessage = new DragSessionCancelledMessage(
+                    null,
+                    message.DragElement,
+                    message.ReturnPosition,
+                    ResolveCancelAnimationDuration(),
+                    false);
+                dragSessionCancelledPublisher.Publish(towerCancelledMessage);
+
                 return;
             }
 
@@ -85,8 +124,45 @@ namespace CubeGame.Tower
                 message.ScrollElement,
                 message.DragElement,
                 returnPosition,
-                ResolveCancelAnimationDuration());
+                ResolveCancelAnimationDuration(),
+                true);
             dragSessionCancelledPublisher.Publish(cancelledMessage);
+        }
+
+        private void PublishDisposeMessage(DragSessionEndedMessage message, HoleDisposalResult disposalResult)
+        {
+            DragSessionDisposalStartedMessage disposalMessage = new DragSessionDisposalStartedMessage(
+                message.ScrollElement,
+                message.DragElement,
+                disposalResult.TargetPosition,
+                ResolveDisposeAnimationDuration());
+            dragSessionDisposalStartedPublisher.Publish(disposalMessage);
+        }
+
+        private void PublishShiftMessages(List<TowerShiftEntry> shiftedBlocks)
+        {
+            if (shiftedBlocks == null || shiftedBlocks.Count == 0)
+            {
+                return;
+            }
+
+            float animationDuration = ResolveTowerShiftAnimationDuration();
+
+            for (int i = 0; i < shiftedBlocks.Count; i++)
+            {
+                TowerShiftEntry shiftedBlock = shiftedBlocks[i];
+
+                if (shiftedBlock == null || shiftedBlock.DragElement == null)
+                {
+                    continue;
+                }
+
+                TowerBlockShiftedMessage shiftedMessage = new TowerBlockShiftedMessage(
+                    shiftedBlock.DragElement,
+                    shiftedBlock.TargetPosition,
+                    animationDuration);
+                towerBlockShiftedPublisher.Publish(shiftedMessage);
+            }
         }
 
         private void PublishAction(TowerActionType actionType, string text)
@@ -103,6 +179,16 @@ namespace CubeGame.Tower
             }
 
             return towerConfig.BlockPlacedText;
+        }
+
+        private string ResolveRemovedText()
+        {
+            if (towerConfig == null)
+            {
+                return "Block removed";
+            }
+
+            return towerConfig.BlockRemovedText;
         }
 
         private string ResolveMissedText()
@@ -127,12 +213,7 @@ namespace CubeGame.Tower
 
         private Vector2 ResolveReturnPosition(DragSessionEndedMessage message)
         {
-            if (message.ScrollElement == null || message.ScrollElement.Root == null)
-            {
-                return message.DragElement.Root.position;
-            }
-
-            return message.ScrollElement.Root.position;
+            return message.ReturnPosition;
         }
 
         private float ResolveCancelAnimationDuration()
@@ -143,6 +224,26 @@ namespace CubeGame.Tower
             }
 
             return runtimeConfig.DragCancelAnimationDuration;
+        }
+
+        private float ResolveDisposeAnimationDuration()
+        {
+            if (holeConfig == null)
+            {
+                return 0.22f;
+            }
+
+            return holeConfig.DisposeAnimationDuration;
+        }
+
+        private float ResolveTowerShiftAnimationDuration()
+        {
+            if (holeConfig == null)
+            {
+                return 0.2f;
+            }
+
+            return holeConfig.TowerShiftAnimationDuration;
         }
     }
 }

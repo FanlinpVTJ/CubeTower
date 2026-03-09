@@ -7,6 +7,7 @@ namespace CubeGame.Tower
     public interface ITowerService
     {
         TowerPlacementResult TryPlace(IDragElement dragElement, Vector2 pointerScreenPosition);
+        TowerRemovalResult TryRemove(IDragElement dragElement);
         List<TowerBlockEntry> GetBlocks();
     }
 }

@@ -2,6 +2,7 @@ using CubeGame.Input;
 using DG.Tweening;
 using CubeGame.ObjectPoolManager;
 using CubeGame.Scroll;
+using CubeGame.Tower;
 using UnityEngine;
 
 namespace CubeGame.Drag
@@ -9,6 +10,7 @@ namespace CubeGame.Drag
     public sealed class BasicDragElement : DragElementBase
     {
         [Zenject.Inject(Optional = true)] private MessagePipe.IPublisher<DragSessionReturnedMessage> dragSessionReturnedPublisher;
+        [Zenject.Inject(Optional = true)] private MessagePipe.IPublisher<DragSessionDisposedMessage> dragSessionDisposedPublisher;
         [SerializeField] private RectTransform animationHolder;
 
         private const float START_SCALE = 0.92f;
@@ -70,8 +72,42 @@ namespace CubeGame.Drag
                         dragSessionReturnedPublisher.Publish(returnedMessage);
                     }
 
+                    if (message.ShouldDespawn)
+                    {
+                        PooledObject.Despawn(gameObject);
+                    }
+                });
+        }
+
+        protected override void HandleDragSessionDisposalStarted(DragSessionDisposalStartedMessage message)
+        {
+            KillScaleTween();
+            KillPositionTween();
+            KillHolderTween();
+            ResetAnimationHolder();
+            positionTween = Root.DOMove(message.TargetPosition, message.AnimationDuration)
+                .SetEase(Ease.InQuad);
+            scaleTween = Root.DOScale(Vector3.zero, message.AnimationDuration)
+                .SetEase(Ease.InBack)
+                .OnComplete(() =>
+                {
+                    if (dragSessionDisposedPublisher != null)
+                    {
+                        DragSessionDisposedMessage disposedMessage = new DragSessionDisposedMessage(
+                            message.ScrollElement,
+                            this);
+                        dragSessionDisposedPublisher.Publish(disposedMessage);
+                    }
+
                     PooledObject.Despawn(gameObject);
                 });
+        }
+
+        protected override void HandleTowerBlockShifted(TowerBlockShiftedMessage message)
+        {
+            KillPositionTween();
+            positionTween = Root.DOMove(message.TargetPosition, message.AnimationDuration)
+                .SetEase(Ease.OutQuad);
         }
 
         private void KillScaleTween()

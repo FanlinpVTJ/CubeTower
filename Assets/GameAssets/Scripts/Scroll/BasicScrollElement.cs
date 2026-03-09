@@ -10,6 +10,7 @@ namespace CubeGame.Scroll
     {
         [Zenject.Inject(Optional = true)] private ISubscriber<DragSessionPlacedMessage> dragSessionPlacedSubscriber;
         [Zenject.Inject(Optional = true)] private ISubscriber<DragSessionReturnedMessage> dragSessionReturnedSubscriber;
+        [Zenject.Inject(Optional = true)] private ISubscriber<DragSessionDisposedMessage> dragSessionDisposedSubscriber;
 
         private const float START_SCALE = 0.92f;
         private const float END_SCALE = 1f;
@@ -18,6 +19,7 @@ namespace CubeGame.Scroll
         private Tween scaleTween;
         private IDisposable dragSessionPlacedSubscription;
         private IDisposable dragSessionReturnedSubscription;
+        private IDisposable dragSessionDisposedSubscription;
 
         public override void Initialize(ScrollElementData data)
         {
@@ -60,6 +62,11 @@ namespace CubeGame.Scroll
             {
                 dragSessionReturnedSubscription = dragSessionReturnedSubscriber.Subscribe(OnDragSessionReturned);
             }
+
+            if (dragSessionDisposedSubscriber != null)
+            {
+                dragSessionDisposedSubscription = dragSessionDisposedSubscriber.Subscribe(OnDragSessionDisposed);
+            }
         }
 
         protected override void OnDisable()
@@ -69,6 +76,8 @@ namespace CubeGame.Scroll
             dragSessionPlacedSubscription = null;
             dragSessionReturnedSubscription?.Dispose();
             dragSessionReturnedSubscription = null;
+            dragSessionDisposedSubscription?.Dispose();
+            dragSessionDisposedSubscription = null;
             KillScaleTween();
             Root.localScale = Vector3.one;
 
@@ -100,6 +109,16 @@ namespace CubeGame.Scroll
         }
 
         private void OnDragSessionReturned(DragSessionReturnedMessage message)
+        {
+            if (message.ScrollElement != this)
+            {
+                return;
+            }
+
+            ShowAnimated();
+        }
+
+        private void OnDragSessionDisposed(DragSessionDisposedMessage message)
         {
             if (message.ScrollElement != this)
             {
