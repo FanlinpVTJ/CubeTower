@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed75c14f821366740975fb9356c283c4, type: 3}
   m_Name: FeedbackConfig
   m_EditorClassIdentifier: 
-  visibleDuration: 1
-  fadeDuration: 0.15
+  visibleDuration: 1.5
+  fadeDuration: 0.5
