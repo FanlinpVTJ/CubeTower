@@ -39,5 +39,11 @@ namespace CubeGame.Tower
         {
             IsHeightLimitReached = isHeightLimitReached;
         }
+
+        public void Clear()
+        {
+            blocks.Clear();
+            IsHeightLimitReached = false;
+        }
     }
 }

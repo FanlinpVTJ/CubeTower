@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using CubeGame.Drag;
+using CubeGame.ObjectPoolManager;
 using CubeGame.Screen;
+using CubeGame.Scroll;
 using UnityEngine;
 
 namespace CubeGame.Tower
@@ -11,6 +13,8 @@ namespace CubeGame.Tower
         private readonly ITowerPlacementRuleValidator ruleValidator;
         private readonly ITowerPositionResolver towerPositionResolver;
         private readonly IRightZone rightZone;
+        private readonly IDragElementFactory dragElementFactory;
+        private readonly IScrollElementDataRepository scrollElementDataRepository;
         private readonly TowerConfig towerConfig;
 
         public TowerService(
@@ -18,12 +22,16 @@ namespace CubeGame.Tower
             ITowerPlacementRuleValidator ruleValidator,
             ITowerPositionResolver towerPositionResolver,
             IRightZone rightZone,
+            IDragElementFactory dragElementFactory,
+            IScrollElementDataRepository scrollElementDataRepository,
             TowerConfig towerConfig)
         {
             this.towerState = towerState;
             this.ruleValidator = ruleValidator;
             this.towerPositionResolver = towerPositionResolver;
             this.rightZone = rightZone;
+            this.dragElementFactory = dragElementFactory;
+            this.scrollElementDataRepository = scrollElementDataRepository;
             this.towerConfig = towerConfig;
         }
 
@@ -95,6 +103,93 @@ namespace CubeGame.Tower
         public List<TowerBlockEntry> GetBlocks()
         {
             return towerState.Blocks;
+        }
+
+        public void Clear()
+        {
+            List<TowerBlockEntry> blocks = towerState.Blocks;
+
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                TowerBlockEntry block = blocks[i];
+
+                if (block == null || block.DragElement == null || block.DragElement.Root == null)
+                {
+                    continue;
+                }
+
+                PooledObject.Despawn(block.DragElement.Root.gameObject);
+            }
+
+            towerState.Clear();
+        }
+
+        public void Restore(TowerSnapshot snapshot)
+        {
+            Clear();
+
+            if (snapshot == null || snapshot.Blocks == null || snapshot.Blocks.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < snapshot.Blocks.Count; i++)
+            {
+                TowerSnapshotBlock snapshotBlock = snapshot.Blocks[i];
+
+                if (snapshotBlock == null)
+                {
+                    continue;
+                }
+
+                ScrollElementData data = scrollElementDataRepository.FindById(snapshotBlock.ElementId);
+
+                if (data == null)
+                {
+                    continue;
+                }
+
+                IDragElement dragElement = dragElementFactory.Create(data, snapshotBlock.Position);
+
+                if (rightZone != null && rightZone.Root != null)
+                {
+                    dragElement.Root.SetParent(rightZone.Root, true);
+                }
+
+                dragElement.Root.position = snapshotBlock.Position;
+                Vector2 elementSize = ResolveElementSize(dragElement.Root);
+                TowerBlockEntry blockEntry = new TowerBlockEntry(
+                    dragElement,
+                    snapshotBlock.ElementId,
+                    snapshotBlock.Position,
+                    elementSize);
+                towerState.AddBlock(blockEntry);
+            }
+
+            towerState.SetHeightLimitReached(snapshot.IsHeightLimitReached);
+        }
+
+        public TowerSnapshot GetSnapshot()
+        {
+            List<TowerSnapshotBlock> snapshotBlocks = new List<TowerSnapshotBlock>();
+            List<TowerBlockEntry> blocks = towerState.Blocks;
+
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                TowerBlockEntry block = blocks[i];
+
+                if (block == null)
+                {
+                    continue;
+                }
+
+                TowerSnapshotBlock snapshotBlock = new TowerSnapshotBlock(block.ElementId, block.Position);
+                snapshotBlocks.Add(snapshotBlock);
+            }
+
+            TowerSnapshot snapshot = new TowerSnapshot(snapshotBlocks, towerState.IsHeightLimitReached);
+
+            return snapshot;
         }
 
         public TowerRemovalResult TryRemove(IDragElement dragElement)
