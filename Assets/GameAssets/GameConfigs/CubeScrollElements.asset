@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fe9ff3063d675a42b61672fbbaac5d7, type: 3}
+  m_Name: CubeScrollElements
+  m_EditorClassIdentifier: 
+  initialElements:
+  - elementId: red
+    elementView: {fileID: 21300000, guid: 22b2e0d63e9776f468d3f461acd5bc4c, type: 3}
+  - elementId: lightRed
+    elementView: {fileID: 21300000, guid: 5e158dc5ed54b01408d9b494ea40309b, type: 3}
+  - elementId: orange
+    elementView: {fileID: 21300000, guid: ab16c8903b9ffe843bf38c2429f6028a, type: 3}
+  - elementId: yellow
+    elementView: {fileID: 21300000, guid: 02fea8aa55abc8e45b584d861b5517f3, type: 3}
+  - elementId: green
+    elementView: {fileID: 21300000, guid: 9883bf4009aac35438587e499a30eecc, type: 3}
+  - elementId: lightBlue
+    elementView: {fileID: 21300000, guid: c3dc7b3b307f104448d4ee0069dc4c4c, type: 3}
+  - elementId: violet
+    elementView: {fileID: 21300000, guid: 742ae5b22313ce743b39cfc57d98b10b, type: 3}
+  - elementId: lightPink
+    elementView: {fileID: 21300000, guid: d2ea6b840339a304fbe71eaf21316c6b, type: 3}
+  - elementId: gray
+    elementView: {fileID: 21300000, guid: 6e37b2c8bfc6fcc458449a1cc3736033, type: 3}
+  - elementId: brown
+    elementView: {fileID: 21300000, guid: 06eb95a2e61fbe5489249fe9f7cf9533, type: 3}
+  - elementId: darkGray
+    elementView: {fileID: 21300000, guid: 3fc529f6437bc3b44b88daad836d1602, type: 3}
+  - elementId: darkViolet
+    elementView: {fileID: 21300000, guid: 871a9177d72ce954fb00273cadca6c75, type: 3}
+  - elementId: 'lightGreen '
+    elementView: {fileID: 21300000, guid: e29f3b65ce26a6b438071c81454ee83f, type: 3}
+  - elementId: turquoise
+    elementView: {fileID: 21300000, guid: b258cde1732b0ff448c8b00d76c14f1a, type: 3}
+  - elementId: lightYellow
+    elementView: {fileID: 21300000, guid: a9599526a79a540429fd00e78d86e798, type: 3}
+  - elementId: violetPink
+    elementView: {fileID: 21300000, guid: cb47d06c0ff545c448571c4be5d2bdec, type: 3}
+  - elementId: pink
+    elementView: {fileID: 21300000, guid: 247b67c07b491c44eaf16f6b78014f16, type: 3}
+  - elementId: lightViolet
+    elementView: {fileID: 21300000, guid: 45a4b9e09ba2b3f4d8e0f78583be06d7, type: 3}
+  - elementId: lightTurquoise
+    elementView: {fileID: 21300000, guid: b6c633056ae5316499eb939f040d73e2, type: 3}
+  - elementId: darkBrown
+    elementView: {fileID: 21300000, guid: 551470020cb44804181a4dfffa32c21a, type: 3}
