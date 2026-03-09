@@ -21,3 +21,5 @@ MonoBehaviour:
     locale: Missed
   - key: height_reached
     locale: Height limit reached
+  - key: block_returned
+    locale: Block returned

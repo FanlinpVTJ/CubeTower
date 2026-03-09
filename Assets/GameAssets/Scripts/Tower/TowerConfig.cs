@@ -9,6 +9,7 @@ namespace CubeGame.Tower
         [SerializeField] private float firstBlockCenterBias = 0.2f;
         [SerializeField] private string blockPlacedText = "Block placed";
         [SerializeField] private string blockRemovedText = "Block removed";
+        [SerializeField] private string blockReturnedText = "Block returned";
         [SerializeField] private string blockMissedText = "Missed";
         [SerializeField] private string heightLimitReachedText = "Height limit reached";
 
@@ -16,6 +17,7 @@ namespace CubeGame.Tower
         public float FirstBlockCenterBias => firstBlockCenterBias;
         public string BlockPlacedText => blockPlacedText;
         public string BlockRemovedText => blockRemovedText;
+        public string BlockReturnedText => blockReturnedText;
         public string BlockMissedText => blockMissedText;
         public string HeightLimitReachedText => heightLimitReachedText;
     }
