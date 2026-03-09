@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: ScrollRuntimeConfig
   m_EditorClassIdentifier: 
   dragStartDistancePixels: 35
-  scrollVelocityToStartDrag: 150
+  scrollVelocityToStartDrag: 100
   dragOffsetUI: {x: 0, y: 20}
+  dragStartAnimationDuration: 0.12
+  dragCancelAnimationDuration: 0.18

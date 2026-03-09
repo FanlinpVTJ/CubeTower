@@ -11,10 +11,7 @@ namespace CubeGame.Scroll
         [Zenject.Inject(Optional = true)] private ISubscriber<DragSessionPlacedMessage> dragSessionPlacedSubscriber;
         [Zenject.Inject(Optional = true)] private ISubscriber<DragSessionReturnedMessage> dragSessionReturnedSubscriber;
         [Zenject.Inject(Optional = true)] private ISubscriber<DragSessionDisposedMessage> dragSessionDisposedSubscriber;
-
-        private const float START_SCALE = 0.92f;
-        private const float END_SCALE = 1f;
-        private const float BOUNCE_DURATION = 0.2f;
+        [Zenject.Inject(Optional = true)] private ScrollRuntimeConfig scrollRuntimeConfig;
 
         private Tween scaleTween;
         private IDisposable dragSessionPlacedSubscription;
@@ -137,8 +134,38 @@ namespace CubeGame.Scroll
 
             ViewTarget.enabled = true;
             KillScaleTween();
-            Root.localScale = Vector3.one * START_SCALE;
-            scaleTween = Root.DOScale(END_SCALE, BOUNCE_DURATION).SetEase(Ease.OutBack);
+            Root.localScale = Vector3.one * ResolveShowScaleFrom();
+            scaleTween = Root.DOScale(Vector3.one, ResolveShowScaleDuration()).SetEase(ResolveShowScaleEase());
+        }
+
+        private float ResolveShowScaleFrom()
+        {
+            if (scrollRuntimeConfig == null)
+            {
+                return 0.92f;
+            }
+
+            return scrollRuntimeConfig.ScrollElementShowScaleFrom;
+        }
+
+        private float ResolveShowScaleDuration()
+        {
+            if (scrollRuntimeConfig == null)
+            {
+                return 0.2f;
+            }
+
+            return scrollRuntimeConfig.ScrollElementShowScaleDuration;
+        }
+
+        private Ease ResolveShowScaleEase()
+        {
+            if (scrollRuntimeConfig == null)
+            {
+                return Ease.OutBack;
+            }
+
+            return scrollRuntimeConfig.ScrollElementShowScaleEase;
         }
     }
 }

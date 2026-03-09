@@ -117,6 +117,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   root: {fileID: 1076592742716408771}
   holeRoot: {fileID: 2974127339067589963}
+  drawHoleGizmo: 1
+  holeGizmoColor: {r: 1, g: 0.047897536, b: 0, a: 1}
 --- !u!1 &5874783078826316646
 GameObject:
   m_ObjectHideFlags: 0
