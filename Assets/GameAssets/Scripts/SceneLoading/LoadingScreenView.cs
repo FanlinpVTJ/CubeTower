@@ -16,7 +16,7 @@ namespace CubeGame.SceneLoading
             SetVisible(false);
         }
 
-        public async UniTask ShowAsync(float fadeDuration)
+        public async UniTask ShowAsync(float fadeDuration, Ease fadeEase)
         {
             KillFadeTween();
             gameObject.SetActive(true);
@@ -37,12 +37,12 @@ namespace CubeGame.SceneLoading
                 return;
             }
 
-            fadeTween = canvasGroup.DOFade(1f, fadeDuration);
+            fadeTween = canvasGroup.DOFade(1f, fadeDuration).SetEase(fadeEase);
             await fadeTween.AsyncWaitForCompletion();
             fadeTween = null;
         }
 
-        public async UniTask HideAsync(float fadeDuration)
+        public async UniTask HideAsync(float fadeDuration, Ease fadeEase)
         {
             KillFadeTween();
 
@@ -64,7 +64,7 @@ namespace CubeGame.SceneLoading
                 return;
             }
 
-            fadeTween = canvasGroup.DOFade(0f, fadeDuration);
+            fadeTween = canvasGroup.DOFade(0f, fadeDuration).SetEase(fadeEase);
             await fadeTween.AsyncWaitForCompletion();
             fadeTween = null;
             gameObject.SetActive(false);

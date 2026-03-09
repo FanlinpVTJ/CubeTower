@@ -20,6 +20,7 @@ namespace CubeGame.Drag
         [Inject(Optional = true)] private ISubscriber<DragSessionMovedMessage> dragMovedSubscriber;
         [Inject(Optional = true)] private ISubscriber<DragSessionEndedMessage> dragEndedSubscriber;
         [Inject(Optional = true)] private ISubscriber<DragSessionCancelledMessage> dragCancelledSubscriber;
+        [Inject(Optional = true)] private ISubscriber<DragSessionPlacedMessage> dragPlacedSubscriber;
         [Inject(Optional = true)] private ISubscriber<DragSessionDisposalStartedMessage> dragDisposalStartedSubscriber;
         [Inject(Optional = true)] private ISubscriber<TowerBlockShiftedMessage> towerBlockShiftedSubscriber;
 
@@ -27,6 +28,7 @@ namespace CubeGame.Drag
         private IDisposable dragMovedSubscription;
         private IDisposable dragEndedSubscription;
         private IDisposable dragCancelledSubscription;
+        private IDisposable dragPlacedSubscription;
         private IDisposable dragDisposalStartedSubscription;
         private IDisposable towerBlockShiftedSubscription;
 
@@ -89,6 +91,11 @@ namespace CubeGame.Drag
                 dragCancelledSubscription = dragCancelledSubscriber.Subscribe(OnDragSessionCancelled);
             }
 
+            if (dragPlacedSubscriber != null)
+            {
+                dragPlacedSubscription = dragPlacedSubscriber.Subscribe(OnDragSessionPlaced);
+            }
+
             if (dragDisposalStartedSubscriber != null)
             {
                 dragDisposalStartedSubscription = dragDisposalStartedSubscriber.Subscribe(OnDragSessionDisposalStarted);
@@ -110,6 +117,8 @@ namespace CubeGame.Drag
             dragEndedSubscription = null;
             dragCancelledSubscription?.Dispose();
             dragCancelledSubscription = null;
+            dragPlacedSubscription?.Dispose();
+            dragPlacedSubscription = null;
             dragDisposalStartedSubscription?.Dispose();
             dragDisposalStartedSubscription = null;
             towerBlockShiftedSubscription?.Dispose();
@@ -177,6 +186,16 @@ namespace CubeGame.Drag
             HandleDragSessionCancelled(message);
         }
 
+        private void OnDragSessionPlaced(DragSessionPlacedMessage message)
+        {
+            if (message.DragElement != this)
+            {
+                return;
+            }
+
+            HandleDragSessionPlaced(message);
+        }
+
         private void OnDragSessionDisposalStarted(DragSessionDisposalStartedMessage message)
         {
             if (message.DragElement != this)
@@ -202,6 +221,10 @@ namespace CubeGame.Drag
         }
 
         protected virtual void HandleDragSessionCancelled(DragSessionCancelledMessage message)
+        {
+        }
+
+        protected virtual void HandleDragSessionPlaced(DragSessionPlacedMessage message)
         {
         }
 
