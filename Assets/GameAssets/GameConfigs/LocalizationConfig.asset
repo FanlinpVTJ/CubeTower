@@ -23,3 +23,9 @@ MonoBehaviour:
     locale: Height limit reached
   - key: block_returned
     locale: Block returned
+  - key: continue_button
+    locale: Continue
+  - key: new_game_button
+    locale: New game
+  - key: quit_button
+    locale: Quit game
