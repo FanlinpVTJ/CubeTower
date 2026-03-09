@@ -14,6 +14,43 @@ namespace CubeGame.Scroll
             this.feedConfig = feedConfig;
         }
 
+        public ScrollElementData FindById(string elementId)
+        {
+            if (feedConfig == null)
+            {
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(elementId))
+            {
+                return null;
+            }
+
+            IReadOnlyList<ScrollElementData> initialElements = feedConfig.InitialElements;
+
+            if (initialElements == null || initialElements.Count == 0)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < initialElements.Count; i++)
+            {
+                ScrollElementData data = initialElements[i];
+
+                if (data == null)
+                {
+                    continue;
+                }
+
+                if (data.ElementId == elementId)
+                {
+                    return data;
+                }
+            }
+
+            return null;
+        }
+
         public IReadOnlyList<ScrollElementData> GetInitialElements()
         {
             if (feedConfig == null)
