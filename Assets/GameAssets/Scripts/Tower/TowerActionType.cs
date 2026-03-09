@@ -5,6 +5,7 @@ namespace CubeGame.Tower
         BlockPlaced = 0,
         BlockMissed = 1,
         HeightLimitReached = 2,
-        BlockRemoved = 3
+        BlockRemoved = 3,
+        BlockReturned = 4
     }
 }

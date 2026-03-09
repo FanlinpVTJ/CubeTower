@@ -83,6 +83,8 @@ namespace CubeGame.Tower
 
             if (message.ScrollElement == null)
             {
+                PublishAction(TowerActionType.BlockReturned, ResolveReturnedText());
+
                 DragSessionCancelledMessage towerCancelledMessage = new DragSessionCancelledMessage(
                     null,
                     message.DragElement,
@@ -189,6 +191,16 @@ namespace CubeGame.Tower
             }
 
             return towerConfig.BlockRemovedText;
+        }
+
+        private string ResolveReturnedText()
+        {
+            if (towerConfig == null)
+            {
+                return "Block returned";
+            }
+
+            return towerConfig.BlockReturnedText;
         }
 
         private string ResolveMissedText()

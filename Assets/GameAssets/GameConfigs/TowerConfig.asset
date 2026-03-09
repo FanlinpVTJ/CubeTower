@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: TowerConfig
   m_EditorClassIdentifier: 
   maxHorizontalOffsetFactor: 0.5
-  blockPlacedText: Block placed
-  blockMissedText: Missed
-  heightLimitReachedText: Height limit reached
+  firstBlockCenterBias: 0.2
+  blockPlacedText: block_placed
+  blockRemovedText: block_removed
+  blockReturnedText: block_returned
+  blockMissedText: block_missed
+  heightLimitReachedText: height_reached

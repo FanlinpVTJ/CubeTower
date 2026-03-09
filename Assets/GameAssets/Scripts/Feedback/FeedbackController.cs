@@ -1,4 +1,5 @@
 using System;
+using CubeGame.Localization;
 using CubeGame.Tower;
 using MessagePipe;
 using Zenject;
@@ -9,15 +10,18 @@ namespace CubeGame.Feedback
     {
         private readonly ISubscriber<TowerActionMessage> towerActionSubscriber;
         private readonly IFeedbackFactory feedbackFactory;
+        private readonly ILocalizationManager localizationManager;
 
         private IDisposable towerActionSubscription;
 
         public FeedbackController(
             ISubscriber<TowerActionMessage> towerActionSubscriber,
-            IFeedbackFactory feedbackFactory)
+            IFeedbackFactory feedbackFactory,
+            ILocalizationManager localizationManager)
         {
             this.towerActionSubscriber = towerActionSubscriber;
             this.feedbackFactory = feedbackFactory;
+            this.localizationManager = localizationManager;
         }
 
         public void Initialize()
@@ -38,7 +42,18 @@ namespace CubeGame.Feedback
                 return;
             }
 
-            feedbackFactory.Create(message.Text);
+            string localizedText = ResolveLocalizedText(message.Text);
+            feedbackFactory.Create(localizedText);
+        }
+
+        private string ResolveLocalizedText(string key)
+        {
+            if (localizationManager == null)
+            {
+                return key;
+            }
+
+            return localizationManager.GetString(key);
         }
     }
 }
