@@ -37,9 +37,9 @@ namespace CubeGame.Feedback
             float visibleDuration = ResolveVisibleDuration(feedbackConfig);
             float fadeDuration = ResolveFadeDuration(feedbackConfig);
             Sequence sequence = DOTween.Sequence();
-            sequence.Append(canvasGroup.DOFade(1f, fadeDuration));
+            sequence.Append(canvasGroup.DOFade(1f, fadeDuration).SetEase(ResolveFadeInEase(feedbackConfig)));
             sequence.AppendInterval(visibleDuration);
-            sequence.Append(canvasGroup.DOFade(0f, fadeDuration));
+            sequence.Append(canvasGroup.DOFade(0f, fadeDuration).SetEase(ResolveFadeOutEase(feedbackConfig)));
             sequence.OnComplete(OnLifetimeCompleted);
             lifetimeSequence = sequence;
         }
@@ -78,6 +78,26 @@ namespace CubeGame.Feedback
             }
 
             return feedbackConfig.FadeDuration;
+        }
+
+        private Ease ResolveFadeInEase(FeedbackConfig feedbackConfig)
+        {
+            if (feedbackConfig == null)
+            {
+                return Ease.OutQuad;
+            }
+
+            return feedbackConfig.FadeInEase;
+        }
+
+        private Ease ResolveFadeOutEase(FeedbackConfig feedbackConfig)
+        {
+            if (feedbackConfig == null)
+            {
+                return Ease.InQuad;
+            }
+
+            return feedbackConfig.FadeOutEase;
         }
 
         private void KillLifetimeSequence()

@@ -266,12 +266,12 @@ namespace CubeGame.Tower
 
         private float ResolveTowerShiftAnimationDuration()
         {
-            if (holeConfig == null)
+            if (towerConfig == null)
             {
                 return 0.2f;
             }
 
-            return holeConfig.TowerShiftAnimationDuration;
+            return towerConfig.TowerShiftAnimationDuration;
         }
 
         private float ResolveTowerShiftStepDelay()

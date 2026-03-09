@@ -33,7 +33,7 @@ namespace CubeGame.SceneLoading
 
             if (loadingScreenView != null)
             {
-                await loadingScreenView.ShowAsync(GetFadeDuration());
+                await loadingScreenView.ShowAsync(GetFadeDuration(), GetFadeInEase());
             }
 
             float startTime = Time.realtimeSinceStartup;
@@ -55,7 +55,7 @@ namespace CubeGame.SceneLoading
 
             if (loadingScreenView != null)
             {
-                await loadingScreenView.HideAsync(GetFadeDuration());
+                await loadingScreenView.HideAsync(GetFadeDuration(), GetFadeOutEase());
             }
 
             IsLoading = false;
@@ -84,6 +84,26 @@ namespace CubeGame.SceneLoading
             }
 
             return Mathf.Max(0f, sceneLoadingConfig.FadeDuration);
+        }
+
+        private DG.Tweening.Ease GetFadeInEase()
+        {
+            if (sceneLoadingConfig == null)
+            {
+                return DG.Tweening.Ease.OutQuad;
+            }
+
+            return sceneLoadingConfig.FadeInEase;
+        }
+
+        private DG.Tweening.Ease GetFadeOutEase()
+        {
+            if (sceneLoadingConfig == null)
+            {
+                return DG.Tweening.Ease.InQuad;
+            }
+
+            return sceneLoadingConfig.FadeOutEase;
         }
     }
 }
