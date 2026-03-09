@@ -14,6 +14,11 @@ namespace CubeGame.Screen
     {
     }
 
+    public interface IHoleView
+    {
+        RectTransform HoleRoot { get; }
+    }
+
     public interface IRightZone : IScreenZone
     {
     }

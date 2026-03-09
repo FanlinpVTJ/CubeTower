@@ -4,26 +4,23 @@ using UnityEngine;
 
 namespace CubeGame.Input
 {
-    public readonly struct DragSessionCancelledMessage
+    public readonly struct DragSessionDisposalStartedMessage
     {
-        public DragSessionCancelledMessage(
+        public DragSessionDisposalStartedMessage(
             IScrollElement scrollElement,
             IDragElement dragElement,
-            Vector2 returnPosition,
-            float animationDuration,
-            bool shouldDespawn)
+            Vector2 targetPosition,
+            float animationDuration)
         {
             ScrollElement = scrollElement;
             DragElement = dragElement;
-            ReturnPosition = returnPosition;
+            TargetPosition = targetPosition;
             AnimationDuration = animationDuration;
-            ShouldDespawn = shouldDespawn;
         }
 
         public IScrollElement ScrollElement { get; }
         public IDragElement DragElement { get; }
-        public Vector2 ReturnPosition { get; }
+        public Vector2 TargetPosition { get; }
         public float AnimationDuration { get; }
-        public bool ShouldDespawn { get; }
     }
 }
