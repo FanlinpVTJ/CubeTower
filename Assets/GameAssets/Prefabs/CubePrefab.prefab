@@ -203,6 +203,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   root: {fileID: 1393331033039508267}
   viewTarget: {fileID: 915833899397469957}
+  animationHolder: {fileID: 4878086254995011118}
 --- !u!114 &1969645759995784889
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -62,6 +62,12 @@ namespace CubeGame.Tower
                 DragSessionPlacedMessage placedMessage = new DragSessionPlacedMessage(message.ScrollElement, message.DragElement);
                 dragSessionPlacedPublisher.Publish(placedMessage);
                 PublishAction(TowerActionType.BlockPlaced, ResolvePlacedText());
+
+                if (placementResult.HasReachedHeightLimit)
+                {
+                    PublishAction(TowerActionType.HeightLimitReached, ResolveHeightLimitText());
+                }
+
                 return;
             }
 

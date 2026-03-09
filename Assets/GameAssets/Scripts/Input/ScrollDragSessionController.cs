@@ -23,8 +23,6 @@ namespace CubeGame.Input
         private ScrollElementData pendingData;
         private IDragElement activeDragElement;
         private Vector2 pressPosition;
-        private float startAnimationEndTime;
-        private bool isStartAnimationPlaying;
 
         public ScrollDragSessionController(
             IDragElementFactory dragElementFactory,
@@ -99,27 +97,12 @@ namespace CubeGame.Input
                 startPosition,
                 targetPosition,
                 animationDuration));
-            startAnimationEndTime = Time.unscaledTime + animationDuration;
-            isStartAnimationPlaying = true;
             pendingScrollElement = null;
             pendingData = null;
         }
 
         private void TickDragging()
         {
-            if (isStartAnimationPlaying)
-            {
-                if (Time.unscaledTime < startAnimationEndTime)
-                {
-                    if (!UnityEngine.Input.GetMouseButtonUp(0))
-                    {
-                        return;
-                    }
-                }
-
-                isStartAnimationPlaying = false;
-            }
-
             Vector2 currentPointerPosition = (Vector2)UnityEngine.Input.mousePosition;
             Vector2 targetPosition = currentPointerPosition + GetDragOffsetUI();
             movedPublisher.Publish(new DragSessionMovedMessage(
@@ -136,7 +119,6 @@ namespace CubeGame.Input
             endedPublisher.Publish(new DragSessionEndedMessage(activeScrollElement, activeDragElement, currentPointerPosition));
             activeScrollElement = null;
             activeDragElement = null;
-            isStartAnimationPlaying = false;
         }
 
         private float GetDragStartDistancePixels()

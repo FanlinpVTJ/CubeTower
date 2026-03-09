@@ -9,6 +9,7 @@ namespace CubeGame.Drag
     public sealed class BasicDragElement : DragElementBase
     {
         [Zenject.Inject(Optional = true)] private MessagePipe.IPublisher<DragSessionReturnedMessage> dragSessionReturnedPublisher;
+        [SerializeField] private RectTransform animationHolder;
 
         private const float START_SCALE = 0.92f;
         private const float END_SCALE = 1f;
@@ -16,13 +17,16 @@ namespace CubeGame.Drag
 
         private Tween scaleTween;
         private Tween positionTween;
+        private Tween holderTween;
 
         public override void Initialize(ScrollElementData data)
         {
             base.Initialize(data);
             KillScaleTween();
             KillPositionTween();
+            KillHolderTween();
             Root.localScale = Vector3.one;
+            ResetAnimationHolder();
         }
 
         public override void OnDragStart(Vector2 pointerScreenPosition)
@@ -37,20 +41,23 @@ namespace CubeGame.Drag
             base.OnDisable();
             KillScaleTween();
             KillPositionTween();
+            KillHolderTween();
             Root.localScale = Vector3.one;
+            ResetAnimationHolder();
         }
 
         protected override void HandleDragSessionStarted(DragSessionStartedMessage message)
         {
-            KillPositionTween();
-            Root.position = message.StartPosition;
-            positionTween = Root.DOMove(message.TargetPosition, message.AnimationDuration).SetEase(Ease.OutQuad);
+            Root.position = message.TargetPosition;
+            AnimateHolderFromStart(message);
         }
 
         protected override void HandleDragSessionCancelled(DragSessionCancelledMessage message)
         {
             KillScaleTween();
             KillPositionTween();
+            KillHolderTween();
+            ResetAnimationHolder();
             positionTween = Root.DOMove(message.ReturnPosition, message.AnimationDuration)
                 .SetEase(Ease.InQuad)
                 .OnComplete(() =>
@@ -87,6 +94,41 @@ namespace CubeGame.Drag
 
             positionTween.Kill();
             positionTween = null;
+        }
+
+        private void AnimateHolderFromStart(DragSessionStartedMessage message)
+        {
+            if (animationHolder == null)
+            {
+                return;
+            }
+
+            KillHolderTween();
+            Vector3 worldOffset = message.StartPosition - message.TargetPosition;
+            Vector3 localOffset = Root.InverseTransformVector(worldOffset);
+            animationHolder.localPosition = localOffset;
+            holderTween = animationHolder.DOLocalMove(Vector3.zero, message.AnimationDuration).SetEase(Ease.OutQuad);
+        }
+
+        private void ResetAnimationHolder()
+        {
+            if (animationHolder == null)
+            {
+                return;
+            }
+
+            animationHolder.localPosition = Vector3.zero;
+        }
+
+        private void KillHolderTween()
+        {
+            if (holderTween == null)
+            {
+                return;
+            }
+
+            holderTween.Kill();
+            holderTween = null;
         }
     }
 }
