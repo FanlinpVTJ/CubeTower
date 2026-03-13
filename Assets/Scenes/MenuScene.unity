@@ -903,10 +903,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1498596067}
     m_Modifications:
-    - target: {fileID: 536916795208476784, guid: 5bd6e0f672d359444ae5ef2db4a1dea1, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1869207784592509440, guid: 5bd6e0f672d359444ae5ef2db4a1dea1, type: 3}
       propertyPath: m_Name
       value: Backgorund
@@ -989,10 +985,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1934393682005637283, guid: 5bd6e0f672d359444ae5ef2db4a1dea1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6456169316877630190, guid: 5bd6e0f672d359444ae5ef2db4a1dea1, type: 3}
-      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
